@@ -1,14 +1,29 @@
-const { Thought } = require("../models");
+const { Thought, User } = require("../models");
 function getThoughts(req, res) {
   Thought.find({}).then((data) => {
     res.json(data);
   });
 }
 
-function addThought(req, res) {
-  Thought.create(req.body).then((data) => {
-    res.json({ message: "Added thought!", data });
-  });
+async function addThought(req, res) {
+  try {
+    const user = await User.findOne({ username: req.body.username });
+    if (user) {
+      const thought = await Thought.create(req.body);
+      // user.thoughts.push(thought._id);
+      // await user.save();
+      const user = await User.findOneAndUpdate(
+        { username: req.body.username },
+        { $push: { thoughts: thought._id } }
+      );
+      res.json();
+    } else {
+      res.status(404).json({ message: "Invalid username!" });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Unable to create thought!" });
+  }
 }
 
 function getThought(req, res) {
@@ -21,13 +36,33 @@ function getThought(req, res) {
     });
 }
 
-function addReaction() {}
-function deleteReaction() {}
+async function deleteThought(req, res) {
+  try {
+    const thought = await Thought.findById(req.params.id);
+    if (thought) {
+      await Thought.deleteOne(thought);
+      const user = await User.findOneAndUpdate(
+        { username: thought.username },
+        { $pull: { thoughts: thought._id } }
+      );
+      res.json({ message: "Deleted thought", deleted: thought, from: user });
+    } else {
+      res.json({ message: "Invalid thought id!" });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Unable to delete thought!" });
+  }
+}
+
+function addReaction(req, res) {}
+function deleteReaction(req, res) {}
 
 module.exports = {
   getThoughts,
   addThought,
   getThought,
+  deleteThought,
   //Reactions
   addReaction,
   deleteReaction,

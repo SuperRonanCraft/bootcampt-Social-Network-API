@@ -28,6 +28,10 @@ const thoughtSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    username: {
+      type: String,
+      required: true,
+    },
     reactions: [reactSchema],
   },
   {
