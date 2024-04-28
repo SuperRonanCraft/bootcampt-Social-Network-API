@@ -21,4 +21,14 @@ function getThought(req, res) {
     });
 }
 
-module.exports = { getThoughts, addThought, getThought };
+function addReaction() {}
+function deleteReaction() {}
+
+module.exports = {
+  getThoughts,
+  addThought,
+  getThought,
+  //Reactions
+  addReaction,
+  deleteReaction,
+};
