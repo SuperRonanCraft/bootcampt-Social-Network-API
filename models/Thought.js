@@ -18,9 +18,11 @@ const reactSchema = new mongoose.Schema({
 // Schema to create Student model
 const thoughtSchema = new mongoose.Schema(
   {
-    text: {
+    thoughtText: {
       type: String,
       required: true,
+      minLength: 1,
+      maxLength: 256,
     },
     createdAt: {
       type: Date,
@@ -35,6 +37,6 @@ const thoughtSchema = new mongoose.Schema(
   }
 );
 
-const Thoughts = mongoose.model("thoughts", thoughtSchema);
+const Thought = mongoose.model("thoughts", thoughtSchema);
 
-module.exports = Thoughts;
+module.exports = Thought;
