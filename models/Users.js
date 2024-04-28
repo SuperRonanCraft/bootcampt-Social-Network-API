@@ -1,34 +1,19 @@
-const { Schema, model } = require("mongoose");
-const thoughtSchama = require("./Thoughts");
+const mongoose = require("mongoose");
 
-// Schema to create Student model
-const studentSchema = new Schema(
-  {
-    username: {
-      type: String,
-      required: true,
-      max_length: 50,
-    },
-    email: {
-      type: String,
-      required: true,
-      max_length: 50,
-    },
-    reactions: {
-      type: String,
-      required: true,
-      max_length: 50,
-    },
-    thoughts: [{ type: Schema.Types.ObjectId, ref: "thoughts" }],
-    friends: [{ type: Schema.Types.ObjectId, ref: this }],
+const schema = new mongoose.Schema({
+  username: {
+    type: String,
+    required: true,
+    max_length: 50,
   },
-  {
-    toJSON: {
-      getters: true,
-    },
-  }
-);
+  email: {
+    type: String,
+    required: true,
+  },
+  thoughts: [{ type: mongoose.Types.ObjectId, ref: "thoughts" }],
+  friends: [{ type: mongoose.Types.ObjectId, ref: "users" }],
+});
 
-const Student = model("student", studentSchema);
+const Student = mongoose.model("users", schema);
 
 module.exports = Student;
