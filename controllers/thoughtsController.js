@@ -7,16 +7,17 @@ function getThoughts(req, res) {
 
 async function addThought(req, res) {
   try {
+    //Find current user by username
     const user = await User.findOne({ username: req.body.username });
     if (user) {
       const thought = await Thought.create(req.body);
-      // user.thoughts.push(thought._id);
-      // await user.save();
+      // Find another user document and add thought
       const user = await User.findOneAndUpdate(
         { username: req.body.username },
-        { $push: { thoughts: thought._id } }
+        { $push: { thoughts: thought._id } },
+        { new: true }
       );
-      res.json();
+      res.json({ message: "Thought created!", thought, user });
     } else {
       res.status(404).json({ message: "Invalid username!" });
     }
@@ -29,10 +30,10 @@ async function addThought(req, res) {
 function getThought(req, res) {
   Thought.findById(req.params.id)
     .then((data) => {
-      res.json(data);
+      res.status(200).json(data);
     })
     .catch((err) => {
-      res.json({ message: "Invalid thought id!" });
+      res.status(404).json({ message: "Invalid thought id!" });
     });
 }
 
@@ -45,9 +46,11 @@ async function deleteThought(req, res) {
         { username: thought.username },
         { $pull: { thoughts: thought._id } }
       );
-      res.json({ message: "Deleted thought", deleted: thought, from: user });
+      res
+        .status(200)
+        .json({ message: "Deleted thought", deleted: thought, from: user });
     } else {
-      res.json({ message: "Invalid thought id!" });
+      res.status(404).json({ message: "Invalid thought id!" });
     }
   } catch (err) {
     console.log(err);
@@ -55,8 +58,12 @@ async function deleteThought(req, res) {
   }
 }
 
-function addReaction(req, res) {}
-function deleteReaction(req, res) {}
+function addReaction(req, res) {
+  console.log("Adding Reaction");
+}
+function deleteReaction(req, res) {
+  console.log("Deleting Reaction");
+}
 
 module.exports = {
   getThoughts,

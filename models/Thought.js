@@ -1,17 +1,18 @@
 const mongoose = require("mongoose");
 
 const reactSchema = new mongoose.Schema({
-  body: {
+  reactionBody: {
+    type: String,
+    required: true,
+    maxLength: 280,
+  },
+  username: {
     type: String,
     required: true,
   },
   createdAt: {
     type: Date,
     default: Date.now,
-  },
-  thought_id: {
-    type: mongoose.Types.ObjectId,
-    required: true,
   },
 });
 
