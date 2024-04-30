@@ -1,22 +1,40 @@
 const mongoose = require("mongoose");
 
-const reactSchema = new mongoose.Schema({
-  reactionBody: {
-    type: String,
-    required: true,
-    maxLength: 280,
-  },
-  username: {
-    type: String,
-    required: true,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
+//Date formatter
+const formatDate = function (d) {
+  return (
+    [d.getMonth() + 1, d.getDate(), d.getFullYear()].join("/") +
+    " " +
+    [d.getHours(), d.getMinutes(), d.getSeconds()].join(":")
+  );
+};
 
-// Schema to create Student model
+//Reaction Schema
+const reactSchema = new mongoose.Schema(
+  {
+    reactionBody: {
+      type: String,
+      required: true,
+      maxLength: 280,
+    },
+    username: {
+      type: String,
+      required: true,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+      get: formatDate,
+    },
+  },
+  {
+    toJSON: {
+      getters: true,
+    },
+  }
+);
+
+// Schema to create thoughts
 const thoughtSchema = new mongoose.Schema(
   {
     thoughtText: {
@@ -27,6 +45,7 @@ const thoughtSchema = new mongoose.Schema(
     },
     createdAt: {
       type: Date,
+      get: formatDate,
       default: Date.now,
     },
     //Added because README says so, but I would not like to save a changeable datapoint
