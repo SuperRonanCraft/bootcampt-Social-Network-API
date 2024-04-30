@@ -1,4 +1,4 @@
-const { User } = require("../models");
+const { User, Thought } = require("../models");
 function getUsers(req, res) {
   User.find({}).then((data) => {
     res.json(data);
@@ -41,11 +41,18 @@ function updateUser(req, res) {
 }
 
 //Delete a user by their ID
-function deleteUser(req, res) {
-  User.findByIdAndDelete({ _id: req.params.id }).then((deleted) => {
-    if (deleted) res.json({ message: "User deleted!", deleted });
-    else res.json({ message: "Invalid user id!" });
-  });
+async function deleteUser(req, res) {
+  const user = await User.findByIdAndDelete(req.params.id).then(
+    async (deleted) => {
+      if (deleted) {
+        await Thought.deleteMany({ userId: deleted._id });
+        await User.updateMany({ $pull: { friends: { _id: req.params.id } } });
+        res.json({ message: "Deleted user and related thoughts!", deleted });
+      } else {
+        res.json({ message: "Invalid user id!" });
+      }
+    }
+  );
 }
 
 //Get a user and populate their friends info

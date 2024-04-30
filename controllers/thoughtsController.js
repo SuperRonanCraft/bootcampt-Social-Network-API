@@ -1,4 +1,5 @@
 const { Thought, User } = require("../models");
+
 function getThoughts(req, res) {
   Thought.find({}).then((data) => {
     res.json(data);
@@ -31,6 +32,20 @@ async function addThought(req, res) {
   }
 }
 
+function updateThought(req, res) {
+  Thought.findByIdAndUpdate(req.params.id, req.body, { new: true })
+    .then((data) => {
+      if (data) {
+        res.status(200).json(data);
+      } else {
+        res.status(404).json({ message: "Invalid thought id" });
+      }
+    })
+    .catch((err) => {
+      res.status(404).json({ message: "Unable to update thought!" });
+    });
+}
+
 function getThought(req, res) {
   Thought.findById(req.params.id)
     .then((data) => {
@@ -61,6 +76,7 @@ async function deleteThought(req, res) {
   }
 }
 
+//Reactions
 async function getReactions(req, res) {
   try {
     const thought = await Thought.findById(req.params.id);
@@ -94,7 +110,11 @@ async function deleteReaction(req, res) {
       },
       { new: true }
     );
-    res.json(thought);
+    if (thought) {
+      res.json(thought);
+    } else {
+      res.status(404).json({ message: "Invalid thoughtId!" });
+    }
   } catch (err) {
     console.log(err);
     res.status(404).json({ message: "Invalid thoughtId or reactionId!" });
@@ -106,6 +126,7 @@ module.exports = {
   addThought,
   getThought,
   deleteThought,
+  updateThought,
   //Reactions
   getReactions,
   addReaction,
