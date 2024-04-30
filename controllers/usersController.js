@@ -1,10 +1,13 @@
 const { User, Thought } = require("../models");
+
+//Get all users
 function getUsers(req, res) {
   User.find({}).then((data) => {
     res.json(data);
   });
 }
 
+//Add a user by email and username
 function addUsers(req, res) {
   User.create(req.body)
     .then((user) => {
@@ -29,7 +32,7 @@ function getUser(req, res) {
     });
 }
 
-//Update a users... anything, username, email, thoughts and friends if you are brave
+//Update a users... anything, username, email, thoughts and friends... if you are brave
 function updateUser(req, res) {
   User.findByIdAndUpdate({ _id: req.params.id }, req.body, {
     new: true,
@@ -69,6 +72,7 @@ async function getFriends(req, res) {
   }
 }
 
+//Adding a friend to a user and visa versa
 async function addFriend(req, res) {
   try {
     const user = await User.findById(req.params.userId);
@@ -107,6 +111,7 @@ async function addFriend(req, res) {
   }
 }
 
+//Delete a friend from both parties
 async function deleteFriend(req, res) {
   try {
     const user = await User.findById(req.params.userId);
