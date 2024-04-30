@@ -1,11 +1,13 @@
 const { Thought, User } = require("../models");
 
+//Get ALL thoughts
 function getThoughts(req, res) {
   Thought.find({}).then((data) => {
     res.json(data);
   });
 }
 
+//Add a thought via its text
 async function addThought(req, res) {
   try {
     //Find current user by username
@@ -32,6 +34,7 @@ async function addThought(req, res) {
   }
 }
 
+//Update a thoughts text or anything else
 function updateThought(req, res) {
   Thought.findByIdAndUpdate(req.params.id, req.body, { new: true })
     .then((data) => {
@@ -46,6 +49,7 @@ function updateThought(req, res) {
     });
 }
 
+//Get a singular thoughts data
 function getThought(req, res) {
   Thought.findById(req.params.id)
     .then((data) => {
@@ -56,6 +60,7 @@ function getThought(req, res) {
     });
 }
 
+//Delete a thought by its id
 async function deleteThought(req, res) {
   try {
     const thought = await Thought.findById(req.params.id);
@@ -76,7 +81,7 @@ async function deleteThought(req, res) {
   }
 }
 
-//Reactions
+//Get all reactions on a thought
 async function getReactions(req, res) {
   try {
     const thought = await Thought.findById(req.params.id);
@@ -86,6 +91,7 @@ async function getReactions(req, res) {
   }
 }
 
+//Add a reaction to a thought
 async function addReaction(req, res) {
   try {
     const thought = await Thought.findByIdAndUpdate(
@@ -101,6 +107,7 @@ async function addReaction(req, res) {
   }
 }
 
+//Delete a reaction by its thought and id
 async function deleteReaction(req, res) {
   try {
     const thought = await Thought.findByIdAndUpdate(
