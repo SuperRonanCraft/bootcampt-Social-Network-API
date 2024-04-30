@@ -8,16 +8,20 @@ function getThoughts(req, res) {
 async function addThought(req, res) {
   try {
     //Find current user by username
-    const user = await User.findOne({ username: req.body.username });
+    const user = await User.findById(req.body.userId);
     if (user) {
-      const thought = await Thought.create(req.body);
+      const thought = await Thought.create({
+        thoughtText: req.body.thoughtText,
+        username: user.username,
+        userId: user._id,
+      });
       // Find another user document and add thought
-      const user = await User.findOneAndUpdate(
-        { username: req.body.username },
-        { $push: { thoughts: thought._id } },
-        { new: true }
+      await User.findByIdAndUpdate(
+        req.body.userId,
+        { $push: { thoughts: thought._id } }
+        // { new: true }
       );
-      res.json({ message: "Thought created!", thought, user });
+      res.json({ message: "Thought created!", thought });
     } else {
       res.status(404).json({ message: "Invalid username!" });
     }
@@ -42,10 +46,9 @@ async function deleteThought(req, res) {
     const thought = await Thought.findById(req.params.id);
     if (thought) {
       await Thought.deleteOne(thought);
-      const user = await User.findOneAndUpdate(
-        { username: thought.username },
-        { $pull: { thoughts: thought._id } }
-      );
+      const user = await User.findByIdAndUpdate(thought.userId, {
+        $pull: { thoughts: thought._id },
+      });
       res
         .status(200)
         .json({ message: "Deleted thought", deleted: thought, from: user });
@@ -58,11 +61,44 @@ async function deleteThought(req, res) {
   }
 }
 
-function addReaction(req, res) {
-  console.log("Adding Reaction");
+async function getReactions(req, res) {
+  try {
+    const thought = await Thought.findById(req.params.id);
+    res.json(thought.reactions);
+  } catch (err) {
+    res.status(404).json({ message: "Invalid thoughtId!" });
+  }
 }
-function deleteReaction(req, res) {
-  console.log("Deleting Reaction");
+
+async function addReaction(req, res) {
+  try {
+    const thought = await Thought.findByIdAndUpdate(
+      req.params.id,
+      {
+        $push: { reactions: req.body },
+      },
+      { new: true }
+    );
+    res.json(thought);
+  } catch (err) {
+    res.status(404).json({ message: "Invalid thoughtId!" });
+  }
+}
+
+async function deleteReaction(req, res) {
+  try {
+    const thought = await Thought.findByIdAndUpdate(
+      req.params.thoughtId,
+      {
+        $pull: { reactions: { _id: req.params.reactionId } },
+      },
+      { new: true }
+    );
+    res.json(thought);
+  } catch (err) {
+    console.log(err);
+    res.status(404).json({ message: "Invalid thoughtId or reactionId!" });
+  }
 }
 
 module.exports = {
@@ -71,6 +107,7 @@ module.exports = {
   getThought,
   deleteThought,
   //Reactions
+  getReactions,
   addReaction,
   deleteReaction,
 };

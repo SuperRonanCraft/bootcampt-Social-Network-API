@@ -83,7 +83,6 @@ async function addFriend(req, res) {
       { new: true }
     )
       .then((user) => {
-        res.json({ message: "Added to friends list!", user });
         console.log(user);
       })
       .catch((err) => {
@@ -95,6 +94,7 @@ async function addFriend(req, res) {
     await User.findByIdAndUpdate(req.params.friendId, {
       $push: { friends: req.params.userId },
     });
+    res.json({ message: "Added to friends list! :D", user });
   } catch (err) {
     console.log(err);
   }
@@ -103,25 +103,18 @@ async function addFriend(req, res) {
 async function deleteFriend(req, res) {
   try {
     const user = await User.findById(req.params.userId);
-    const friending = await User.findById(req.params.friendId);
-    //Friending self?
-    if (user._id === friending._id) {
-      res.json({ message: "Cannot friend yourself!" });
-      return;
+    const unfriending = await User.findById(req.params.friendId);
+
+    if (!user || !unfriending) {
     }
-    //Already friends?
-    if (user.friends.indexOf(friending._id) != -1) {
-      res.json({ message: `Already friends with ${friending.username}` });
-      return;
-    }
+
     //Add friend to users friend list
     await User.findByIdAndUpdate(
       req.params.userId,
-      { $push: { friends: req.params.friendId } },
+      { $pull: { friends: req.params.friendId } },
       { new: true }
     )
       .then((user) => {
-        res.json({ message: "Added to friends list!", user });
         console.log(user);
       })
       .catch((err) => {
@@ -131,10 +124,12 @@ async function deleteFriend(req, res) {
 
     //Add friend to other users friends list
     await User.findByIdAndUpdate(req.params.friendId, {
-      $push: { friends: req.params.userId },
+      $pull: { friends: req.params.userId },
     });
+    res.status(200).json({ message: "Deleted friend! :(" });
   } catch (err) {
     console.log(err);
+    res.status(404).json({ message: "Invalid userId or friendId!" });
   }
 }
 
@@ -143,6 +138,8 @@ function getThoughts(req, res) {
   try {
     User.findById(req.params.id)
       .lean() //Used to disable vituals
+      //Populate thoughts field with thoughts documents
+      //and remove the `__v` field cause its annoying
       .populate("thoughts", "-__v")
       .then((data) => {
         res.json(data);

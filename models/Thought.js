@@ -29,8 +29,15 @@ const thoughtSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    //Added because README says so, but I would not like to save a changeable datapoint
     username: {
       type: String,
+      required: true,
+    },
+    //Added userId because usernames can change
+    userId: {
+      type: mongoose.Types.ObjectId,
+      ref: "users",
       required: true,
     },
     reactions: [reactSchema],
