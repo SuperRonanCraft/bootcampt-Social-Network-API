@@ -32,6 +32,15 @@ Download or Pull this project from GitHub <br />Open the project on your favorit
 
 Use PostMan or Insomnia to call its api with `https://localhost:3001/api/ROUTE` GET, POST, PUT or DELETE methods
 
+
+
+https://github.com/SuperRonanCraft/bootcampt-Social-Network-API/assets/7385626/1a5e47eb-fdc4-4014-ad14-acc45f408ab6
+
+
+
+![image](https://github.com/SuperRonanCraft/bootcampt-Social-Network-API/assets/7385626/5339968e-c42d-4e61-93d3-5a1526cd1012)
+
+
 ## How to Contribute
 
 Want to contribute? Create a fork of this repo, add your changes to create a pull request (PR) when you are ready!
